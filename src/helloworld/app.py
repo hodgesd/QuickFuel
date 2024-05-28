@@ -14,20 +14,21 @@ class HelloWorld(toga.App):
         # Create main layout container
         main_box = toga.Box(style=Pack(direction=COLUMN, alignment=CENTER, padding=20))
 
+        self.CONVERSION_FACTOR = 6.7
         # Name input field
-        name_label = toga.Label("Your name: ", style=Pack(padding=(0, 5)))
-        self.name_input = toga.TextInput(style=Pack(flex=1))
+        self.name_label = toga.Label("Your name: ", style=Pack(padding=(0, 5)))
+        self.name_input = toga.NumberInput(style=Pack(flex=1))
         self.name_input.on_confirm = self.say_hello
 
         # Create a box to hold the name label and input
-        name_box = toga.Box(style=Pack(direction=ROW, padding=5))
-        name_box.add(name_label)
-        name_box.add(self.name_input)
+        self.name_box = toga.Box(style=Pack(direction=ROW, padding=5))
+        self.name_box.add(self.name_label)
+        self.name_box.add(self.name_input)
 
         # Fuel slider and label
         self.fuel_slider = toga.Slider(min=5000, max=41500, tick_count=366, on_change=self.on_fuel_slider_change,
                                        on_release=self.on_fuel_slider_release, style=Pack(flex=1))
-        self.fuel_label_gals = toga.Label(f"{self.fuel_slider.value / 6.7:,.0f} gals",
+        self.fuel_label_gals = toga.Label(f"{self.fuel_slider.value / self.CONVERSION_FACTOR:,.0f} gals",
                                           style=Pack(padding=(0, 5), text_align=CENTER, font_family=MONOSPACE,
                                                      font_size=24, font_weight=BOLD))
         self.fuel_label_lbs = toga.Label(f"{self.fuel_slider.value:,.0f} lbs",
@@ -52,19 +53,20 @@ class HelloWorld(toga.App):
         # Button to say hello
 
         self.starting_fuel_switch = toga.Switch("Start Fuel", on_change=self.toggle_button_visibility,
-                                           style=Pack(padding=5))
+                                                style=Pack(padding=5))
         self.starting_fuel_switch.value = True
-        fuel_in_lbs_switch = toga.Switch("Liters", value=False)
+        self.is_liters = toga.Switch("Liters", value=False, on_change=self.toggle_conversion_factor,
+                                     style=Pack(padding=5))
 
         self.hello_button = toga.Button("Say Hello!", on_press=self.say_hello,
-                                   style=Pack(padding=5))
+                                        style=Pack(padding=5))
 
-        switch_box = toga.Box(style=Pack(direction=ROW, padding=5))
+        switch_box = toga.Box(style=Pack(direction=ROW, padding=5, flex=1))
         switch_box.add(self.starting_fuel_switch)
-        switch_box.add(fuel_in_lbs_switch)
+        switch_box.add(self.is_liters)
 
         # Add all widgets to the main box
-        main_box.add(name_box)
+        main_box.add(self.name_box)
         main_box.add(self.hello_button)
         main_box.add(button_box)
         main_box.add(fuel_slider_box)
@@ -75,8 +77,23 @@ class HelloWorld(toga.App):
         self.main_window.content = main_box
         self.main_window.show()
 
+    # def toggle_button_visibility(self, widget):
+    #     self.hello_button.enabled = self.starting_fuel_switch.value
+
+    def toggle_conversion_factor(self, widget):
+        self.CONVERSION_FACTOR = 6.7 if not self.is_liters else 0.149
+
     def toggle_button_visibility(self, widget):
-        self.hello_button.enabled = self.starting_fuel_switch.value
+        visible = self.starting_fuel_switch.value
+        # self.hello_button.enabled = visible
+        if visible:
+            self.name_input.style.visibility = 'visible'
+            self.name_label.style.visibility = 'visible'
+            self.hello_button.style.visibility = 'visible'
+        else:
+            self.name_input.style.visibility = 'hidden'
+            self.name_label.style.visibility = 'hidden'
+            self.hello_button.style.visibility = 'hidden'
 
     def on_fuel_slider_release(self, widget):
         # round to nearst 25
@@ -84,8 +101,9 @@ class HelloWorld(toga.App):
 
     def on_fuel_slider_change(self, widget):
         # Update fuel label based on slider value
-        fuel_gals = self.fuel_slider.value / 6.7
-        self.fuel_label_gals.text = f"{fuel_gals:,.0f} gals"
+        fuel_volume_label = self.get_fuel_unit()
+        fuel_volume = self.fuel_slider.value / self.CONVERSION_FACTOR
+        self.fuel_label_gals.text = f"{fuel_volume:,.0f} {fuel_volume_label}"
         self.fuel_label_lbs.text = f"{self.fuel_slider.value:,.0f} lbs"
 
     def set_pounds(self, widget, lbs: int):
@@ -98,6 +116,10 @@ class HelloWorld(toga.App):
         payload = response.json()
 
         self.main_window.info_dialog(greeting(self.name_input.value), payload["body"])
+
+    def get_fuel_unit(self):
+        return "gals" if not self.is_liters else "litres"
+
 
 
 def greeting(name):
