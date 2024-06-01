@@ -49,9 +49,9 @@ class HelloWorld(toga.App):
         fuel_slider_box.add(self.fuel_slider)
         fuel_slider_box.add(self.fuel_label_volume)
 
-        self.delta_title = toga.Label("Uplift",style=Pack(visibility=HIDDEN, padding_top=(25), text_align=CENTER, font_family=MONOSPACE,
+        self.delta_title = toga.Label("Uplift",style=Pack(visibility=HIDDEN, padding_top=(35), text_align=CENTER, font_family=MONOSPACE,
                                                     font_size=24, font_weight=BOLD))
-        self.delta_volume_label = toga.Label(f"{(self.fuel_slider.value - self.starting_volume_lbs ) / self.CONVERSION_FACTOR:,.0f} {self.fuel_volume_label}", style=Pack(visibility=HIDDEN,padding=(0, 5), text_align=CENTER, font_family=MONOSPACE,
+        self.delta_volume_label = toga.Label(f"{(self.fuel_slider.value - self.starting_volume_lbs ) / self.CONVERSION_FACTOR:,.0f} {self.fuel_volume_label}", style=Pack(visibility=HIDDEN,padding=(10), text_align=CENTER, font_family=MONOSPACE,
                                                     font_size=24, font_weight=BOLD))
         fuel_slider_box.add(self.delta_title)
         fuel_slider_box.add(self.delta_volume_label)
