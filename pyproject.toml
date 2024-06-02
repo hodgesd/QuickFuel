@@ -1,7 +1,7 @@
 # This project was generated with 0.3.18 using template: https://github.com/beeware/briefcase-template@v0.3.18
 [tool.briefcase]
-project_name = "Fuel Calculator"
-bundle = "com.example"
+project_name = "GVII Fuel Calculator"
+bundle = "com.hdgs"
 version = "0.0.1"
 url = "https://example.com/helloworld"
 license = "BSD license"
@@ -9,9 +9,9 @@ author = "Derrick Hodges"
 author_email = "hodgesd@gmail.com"
 
 [tool.briefcase.app.helloworld]
-formal_name = "Fuel Calculator"
+formal_name = "GVII Fuel Calculator"
 description = "Corporate Fuel Calculator"
-long_description = """Converts fuel from pounds to gallons or liters.
+long_description = """Converts fuel in pounds to gallons or liters.
 """
 
 icon = "icons/helloworld"
