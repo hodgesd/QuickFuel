@@ -33,10 +33,20 @@ class HelloWorld(toga.App):
         self.starting_box.add(self.starting_slider)
         self.starting_box.add(self.starting_label_lbs)
 
-        self.starting_fuel_switch = toga.Switch("Start Fuel", on_change=self.toggle_button_visibility,
-                                                style=Pack(padding=25))
-        self.is_liters = toga.Switch("Liters", on_change=self.toggle_conversion_factor,
-                                     style=Pack(padding=25))
+        self.starting_fuel_switch = toga.Switch("Convert", on_change=self.toggle_button_visibility,
+                                                style=Pack(padding=(5,0)))
+        self.starting_alt_label = toga.Label("Uplift", style=Pack(padding=10))
+        self.box_start_switch = toga.Box(style=Pack(direction=ROW, padding=(0,15)))
+        self.box_start_switch.add(self.starting_fuel_switch)
+        self.box_start_switch.add(self.starting_alt_label)
+
+        self.is_liters = toga.Switch("Gals", on_change=self.toggle_conversion_factor,
+                                     style=Pack(padding=(5,0)))
+        self.is_liters_alt_label = toga.Label("Liters", style=Pack(padding=10))
+        self.box_is_liters_switch = toga.Box(style=Pack(direction=ROW, padding=(0,15)))
+        self.box_is_liters_switch.add(self.is_liters)
+        self.box_is_liters_switch.add(self.is_liters_alt_label)
+
         self.flex_box = toga.Box(style=Pack(flex=1))
 
 
@@ -72,9 +82,9 @@ class HelloWorld(toga.App):
 
 
         switch_box = toga.Box(style=Pack(direction=ROW, padding_bottom=20, flex=1))
-        switch_box.add(self.starting_fuel_switch)
+        switch_box.add(self.box_start_switch)
         switch_box.add(self.flex_box)
-        switch_box.add(self.is_liters)
+        switch_box.add(self.box_is_liters_switch)
 
         main_box.add(self.starting_box)
         main_box.add(button_box)
