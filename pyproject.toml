@@ -23,8 +23,6 @@ test_sources = [
 ]
 
 requires = [
-    "httpx",
-    "numpy"
 ]
 test_requires = [
     "pytest",
