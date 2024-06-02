@@ -25,7 +25,7 @@ class HelloWorld(toga.App):
         # self.name_input = toga.NumberInput(style=Pack(visibility=HIDDEN,flex=1))
         # self.name_input.on_confirm = self.say_hello
 
-        self.starting_title = toga.Label("Gauge", style=Pack(visibility=HIDDEN, padding_top=(35), text_align=CENTER,
+        self.starting_title = toga.Label("Fuel Gauge", style=Pack(visibility=HIDDEN, padding_top=(35), text_align=CENTER,
                                                            color=self.accent_color, font_family=MONOSPACE,
                                                            font_size=24, font_weight=BOLD))
         self.starting_slider = toga.Slider(min=4000, max=15000, tick_count=111, value=5000,on_change=self.on_starting_slider_change,
@@ -56,7 +56,7 @@ class HelloWorld(toga.App):
 
         self.flex_box = toga.Box(style=Pack(flex=1))
 
-        self.fuel_slider_title = toga.Label("Conversion", style=Pack(text_align=CENTER,
+        self.fuel_slider_title = toga.Label("Fuel Conversion", style=Pack(text_align=CENTER,
                                                            font_family=MONOSPACE,
                                                            font_size=24, font_weight=BOLD))
         self.fuel_slider = toga.Slider(min=5000, max=41500, tick_count=366, on_change=self.on_fuel_slider_change,
@@ -82,7 +82,7 @@ class HelloWorld(toga.App):
         fuel_slider_box.add(self.fuel_slider)
         fuel_slider_box.add(self.fuel_label_volume)
 
-        self.delta_title = toga.Label("Uplift",style=Pack(visibility=HIDDEN, padding_top=(60), text_align=CENTER, color=self.accent_color, font_family=MONOSPACE,
+        self.delta_title = toga.Label("Fuel Uplift",style=Pack(visibility=HIDDEN, padding_top=(60), text_align=CENTER, color=self.accent_color, font_family=MONOSPACE,
                                                     font_size=24, font_weight=BOLD))
         self.delta_volume_label = toga.Label(f"{(self.fuel_slider.value - self.starting_volume_lbs ) / self.CONVERSION_FACTOR:,.0f} {self.fuel_volume_label}", style=Pack(visibility=HIDDEN,padding=(10), text_align=CENTER, color=self.accent_color, font_family=MONOSPACE,
                                                     font_size=24, font_weight=BOLD))
