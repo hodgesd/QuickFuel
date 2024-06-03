@@ -14,7 +14,8 @@ description = "Corporate Fuel Calculator"
 long_description = """Converts fuel in pounds to gallons or liters.
 """
 
-icon = "icons/helloworld"
+
+icon = "icon/Icon"
 sources = [
     "src/helloworld",
 ]
