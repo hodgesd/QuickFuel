@@ -4,8 +4,6 @@ import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, MONOSPACE, BOLD, HIDDEN, VISIBLE
 
-print("executable:", sys.executable)
-
 class HelloWorld(toga.App):
     def __init__(self, formal_name, app_id):
         super().__init__(formal_name, app_id)
@@ -58,9 +56,6 @@ class HelloWorld(toga.App):
         self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True, accent=True, padding=10)
 
         self.flex_box2 = toga.Box(style=Pack(flex=1))
-
-        # Debugging: Print initialized elements
-        print("UI elements initialized.")
 
     def create_label(self, text, hidden=False, accent=False, size=24, weight=BOLD, **style_kwargs):
         visibility = HIDDEN if hidden else VISIBLE
@@ -145,16 +140,13 @@ class HelloWorld(toga.App):
         ])
 
     def toggle_conversion_factor(self, _widget):
-        print("Toggling conversion factor")
         self.CONVERSION_FACTOR, self.fuel_volume_label = (6.7, "gals") if not self.is_liters.value else (1.54322, "liters")
         self.update_fuel_display()
 
     def toggle_button_visibility(self, _widget):
-        print("Toggling button visibility")
         self.change_visibility(VISIBLE if self.starting_fuel_switch.value else HIDDEN)
 
     def change_visibility(self, visibility):
-        print(f"Changing visibility to: {visibility}")
         for widget in [self.starting_title, self.starting_slider, self.starting_label_lbs, self.delta_title, self.delta_volume_label]:
             if widget:
                 widget.style.visibility = visibility
@@ -185,17 +177,14 @@ class HelloWorld(toga.App):
                 self.fuel_label_volume.text = f"{fuel_volume:,.0f} {self.fuel_volume_label}"
 
     def set_pounds(self, pounds, *args, **kwargs):
-        print(f"Setting pounds: {pounds}")
         if self.fuel_slider:
             self.fuel_slider.value = pounds
 
     def get_fuel_unit(self):
         return "gals" if not self.is_liters.value else "liters"
 
-
 def main():
     return HelloWorld("G-VII Fuel Calculator", "org.example.helloworld")
-
 
 if __name__ == '__main__':
     app = main()
