@@ -1,42 +1,32 @@
-import sys
 from functools import partial
+
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, MONOSPACE, BOLD, HIDDEN, VISIBLE
 
+
 class HelloWorld(toga.App):
+    ACCENT_COLOR = "#006db6"
+    INITIAL_VOLUME_LABEL = "gals"
+    INITIAL_VOLUME_LBS = 5000
+    GALLON_CONVERSION_FACTOR = 6.7
+    LITRE_CONVERSION_FACTOR = 1.54322
+    ALT_LABEL_SIZE = 13
+
     def __init__(self, formal_name, app_id):
         super().__init__(formal_name, app_id)
-        self.accent_color = "#006db6"
+        self.accent_color = self.ACCENT_COLOR
         self.fuel_volume_label = "gals"
-        self.starting_volume_lbs = 5000
-        self.CONVERSION_FACTOR = 6.7
-        self.alt_label_size = 13
-
-        # Initialize UI elements to None
-        self.starting_title = None
-        self.starting_slider = None
-        self.starting_label_lbs = None
-        self.starting_fuel_switch = None
-        self.starting_alt_label = None
-        self.is_liters = None
-        self.is_liters_alt_label = None
-        self.flex_box = None
-        self.fuel_slider_title = None
-        self.fuel_slider = None
-        self.fuel_label_volume = None
-        self.fuel_label_weight = None
-        self.delta_title = None
-        self.delta_volume_label = None
-        self.flex_box2 = None
-        self.box_start_switch = None
-        self.box_is_liters_switch = None
-        self.starting_box = None
+        self.starting_volume_lbs = self.INITIAL_VOLUME_LBS
+        self.conversion_factor = self.GALLON_CONVERSION_FACTOR
+        self.alt_label_size = self.ALT_LABEL_SIZE
+        # self.initialize_ui_elements()
 
     def initialize_ui_elements(self):
         self.starting_title = self.create_label("Fuel Gauge", hidden=True, accent=True, padding_top=35)
         self.starting_slider = self.create_slider(4000, 15000, self.on_starting_slider_change, hidden=True)
-        self.starting_label_lbs = self.create_label(f"{self.starting_slider.value:,.0f} lbs", hidden=True, accent=True, padding=(0, 5))
+        self.starting_label_lbs = self.create_label(f"{self.starting_slider.value:,.0f} lbs", hidden=True, accent=True,
+                                                    padding=(0, 5))
 
         self.starting_fuel_switch = self.create_switch("Convert", self.toggle_button_visibility)
         self.starting_alt_label = self.create_label("Uplift", size=self.alt_label_size, padding=10)
@@ -48,12 +38,14 @@ class HelloWorld(toga.App):
 
         self.fuel_slider_title = self.create_label("Fuel Conversion")
         self.fuel_slider = self.create_slider(5000, 41500, self.on_fuel_slider_change)
-        self.fuel_label_volume = self.create_label(f"{self.fuel_slider.value / self.CONVERSION_FACTOR:,.0f} {self.fuel_volume_label}", padding=(0, 5))
+        self.fuel_label_volume = self.create_label(
+            f"{self.fuel_slider.value / self.conversion_factor:,.0f} {self.fuel_volume_label}", padding=(0, 5))
         self.fuel_label_weight = self.create_label(f"{self.fuel_slider.value:,.0f} lbs", padding=(0, 5))
 
         self.delta_title = self.create_label("Fuel Uplift", hidden=True, accent=True, padding_top=60)
-        delta_volume = (self.fuel_slider.value - self.starting_volume_lbs) / self.CONVERSION_FACTOR
-        self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True, accent=True, padding=10)
+        delta_volume = (self.fuel_slider.value - self.starting_volume_lbs) / self.conversion_factor
+        self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True,
+                                                    accent=True, padding=10)
 
         self.flex_box2 = toga.Box(style=Pack(flex=1))
 
@@ -71,7 +63,8 @@ class HelloWorld(toga.App):
         return toga.Slider(min=min_value, max=max_value, tick_count=tick_count, on_change=on_change, style=style)
 
     def create_switch(self, label, on_change):
-        return toga.Switch(label, on_change=on_change, style=Pack(font_weight=BOLD, font_family=MONOSPACE, padding=(4, 0)))
+        return toga.Switch(label, on_change=on_change,
+                           style=Pack(font_weight=BOLD, font_family=MONOSPACE, padding=(4, 0)))
 
     def startup(self):
         self.initialize_ui_elements()
@@ -140,14 +133,16 @@ class HelloWorld(toga.App):
         ])
 
     def toggle_conversion_factor(self, _widget):
-        self.CONVERSION_FACTOR, self.fuel_volume_label = (6.7, "gals") if not self.is_liters.value else (1.54322, "liters")
+        self.conversion_factor, self.fuel_volume_label = (6.7, "gals") if not self.is_liters.value else (
+        1.54322, "liters")
         self.update_fuel_display()
 
     def toggle_button_visibility(self, _widget):
         self.change_visibility(VISIBLE if self.starting_fuel_switch.value else HIDDEN)
 
     def change_visibility(self, visibility):
-        for widget in [self.starting_title, self.starting_slider, self.starting_label_lbs, self.delta_title, self.delta_volume_label]:
+        for widget in [self.starting_title, self.starting_slider, self.starting_label_lbs, self.delta_title,
+                       self.delta_volume_label]:
             if widget:
                 widget.style.visibility = visibility
 
@@ -166,9 +161,9 @@ class HelloWorld(toga.App):
 
     def update_fuel_display(self):
         if self.fuel_slider and self.starting_slider:
-            fuel_volume = self.fuel_slider.value / self.CONVERSION_FACTOR
+            fuel_volume = self.fuel_slider.value / self.conversion_factor
             delta_lbs = self.fuel_slider.value - self.starting_slider.value
-            delta_volume = delta_lbs / self.CONVERSION_FACTOR
+            delta_volume = delta_lbs / self.conversion_factor
             if self.delta_volume_label:
                 self.delta_volume_label.text = f"{delta_volume:,.0f} {self.fuel_volume_label}"
             if self.fuel_label_weight:
@@ -183,8 +178,10 @@ class HelloWorld(toga.App):
     def get_fuel_unit(self):
         return "gals" if not self.is_liters.value else "liters"
 
+
 def main():
     return HelloWorld("G-VII Fuel Calculator", "org.example.helloworld")
+
 
 if __name__ == '__main__':
     app = main()
