@@ -140,9 +140,6 @@ class HelloWorld(toga.App):
         for widget in [self.starting_title, self.starting_slider, self.starting_label_lbs, self.delta_title, self.delta_volume_label]:
             widget.style.visibility = visibility
 
-    def on_fuel_slider_release(self, _widget):
-        self.fuel_slider.value = round(self.fuel_slider.value / 100) * 100
-
     def on_starting_slider_change(self, _widget):
         self.starting_label_lbs.text = f"{self.starting_slider.value:,.0f} lbs"
         self.update_fuel_display()
