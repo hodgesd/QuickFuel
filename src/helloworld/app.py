@@ -1,12 +1,10 @@
 import sys
 from functools import partial
-
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, MONOSPACE, BOLD, HIDDEN, VISIBLE
 
 print("executable:", sys.executable)
-
 
 class HelloWorld(toga.App):
     def __init__(self, formal_name, app_id):
@@ -16,16 +14,15 @@ class HelloWorld(toga.App):
         self.starting_volume_lbs = 5000
         self.CONVERSION_FACTOR = 6.7
         self.alt_label_size = 13
+
+        # Initialize UI elements to None
         self.starting_title = None
         self.starting_slider = None
         self.starting_label_lbs = None
-        self.starting_box = None
         self.starting_fuel_switch = None
         self.starting_alt_label = None
-        self.box_start_switch = None
         self.is_liters = None
         self.is_liters_alt_label = None
-        self.box_is_liters_switch = None
         self.flex_box = None
         self.fuel_slider_title = None
         self.fuel_slider = None
@@ -34,6 +31,36 @@ class HelloWorld(toga.App):
         self.delta_title = None
         self.delta_volume_label = None
         self.flex_box2 = None
+        self.box_start_switch = None
+        self.box_is_liters_switch = None
+        self.starting_box = None
+
+    def initialize_ui_elements(self):
+        self.starting_title = self.create_label("Fuel Gauge", hidden=True, accent=True, padding_top=35)
+        self.starting_slider = self.create_slider(4000, 15000, self.on_starting_slider_change, hidden=True)
+        self.starting_label_lbs = self.create_label(f"{self.starting_slider.value:,.0f} lbs", hidden=True, accent=True, padding=(0, 5))
+
+        self.starting_fuel_switch = self.create_switch("Convert", self.toggle_button_visibility)
+        self.starting_alt_label = self.create_label("Uplift", size=self.alt_label_size, padding=10)
+
+        self.is_liters = self.create_switch("Gals", self.toggle_conversion_factor)
+        self.is_liters_alt_label = self.create_label("L", size=self.alt_label_size, padding=10)
+
+        self.flex_box = toga.Box(style=Pack(flex=1))
+
+        self.fuel_slider_title = self.create_label("Fuel Conversion")
+        self.fuel_slider = self.create_slider(5000, 41500, self.on_fuel_slider_change)
+        self.fuel_label_volume = self.create_label(f"{self.fuel_slider.value / self.CONVERSION_FACTOR:,.0f} {self.fuel_volume_label}", padding=(0, 5))
+        self.fuel_label_weight = self.create_label(f"{self.fuel_slider.value:,.0f} lbs", padding=(0, 5))
+
+        self.delta_title = self.create_label("Fuel Uplift", hidden=True, accent=True, padding_top=60)
+        delta_volume = (self.fuel_slider.value - self.starting_volume_lbs) / self.CONVERSION_FACTOR
+        self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True, accent=True, padding=10)
+
+        self.flex_box2 = toga.Box(style=Pack(flex=1))
+
+        # Debugging: Print initialized elements
+        print("UI elements initialized.")
 
     def create_label(self, text, hidden=False, accent=False, size=24, weight=BOLD, **style_kwargs):
         visibility = HIDDEN if hidden else VISIBLE
@@ -45,123 +72,120 @@ class HelloWorld(toga.App):
     def create_slider(self, min_value, max_value, on_change, hidden=False):
         visibility = HIDDEN if hidden else VISIBLE
         tick_count = int((max_value - min_value) / 100) + 1
-        print(tick_count)
         style = Pack(color=self.accent_color, flex=1, visibility=visibility)
         return toga.Slider(min=min_value, max=max_value, tick_count=tick_count, on_change=on_change, style=style)
 
+    def create_switch(self, label, on_change):
+        return toga.Switch(label, on_change=on_change, style=Pack(font_weight=BOLD, font_family=MONOSPACE, padding=(4, 0)))
+
     def startup(self):
-        fuel_presets = [10000, 15000, 20000, 30000, 41500]
+        self.initialize_ui_elements()
+        main_box = self.create_main_box()
+        self.main_window = toga.MainWindow(title=self.formal_name)
+        self.main_window.content = toga.Box(children=[main_box, self.flex_box2, self.create_switch_box()],
+                                            style=Pack(direction=COLUMN, padding=(40, 0)))
+        self.main_window.show()
 
-        main_box = toga.Box(style=Pack(direction=COLUMN, alignment=CENTER, padding=20))
+    def create_main_box(self):
+        return toga.Box(
+            style=Pack(direction=COLUMN, alignment=CENTER, padding=20),
+            children=[
+                self.create_starting_box(),
+                self.create_fuel_slider_box()
+            ]
+        )
 
-        self.starting_title = self.create_label("Fuel Gauge", hidden=True, accent=True, padding_top=35)
-        self.starting_slider = self.create_slider(4000, 15000, on_change=self.on_starting_slider_change, hidden=True)
-        self.starting_label_lbs = self.create_label(f"{self.starting_slider.value:,.0f} lbs", hidden=True, accent=True,
-                                                    padding=(0, 5))
-
-        self.starting_box = toga.Box(style=Pack(direction=COLUMN, padding=(0, 15)))
-        self.starting_box.add(self.starting_title)
-        self.starting_box.add(self.starting_slider)
-        self.starting_box.add(self.starting_label_lbs)
-
-        self.starting_fuel_switch = toga.Switch("Convert", on_change=self.toggle_button_visibility,
-                                                style=Pack(font_weight=BOLD, font_family=MONOSPACE, padding=(4, 0)))
-        self.starting_alt_label = self.create_label("Uplift", size=self.alt_label_size, padding=10)
+    def create_starting_box(self):
         self.box_start_switch = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
         self.box_start_switch.add(self.starting_fuel_switch)
         self.box_start_switch.add(self.starting_alt_label)
 
-        self.is_liters = toga.Switch("Gals", on_change=self.toggle_conversion_factor,
-                                     style=Pack(font_weight=BOLD, font_family=MONOSPACE, padding=(4, 0)))
-        self.is_liters_alt_label = self.create_label("L", size=self.alt_label_size, padding=10)
+        self.starting_box = toga.Box(style=Pack(direction=COLUMN, padding=(0, 15)), children=[
+            self.starting_title,
+            self.starting_slider,
+            self.starting_label_lbs
+        ])
+        return self.starting_box
+
+    def create_fuel_slider_box(self):
+        return toga.Box(
+            style=Pack(direction=COLUMN, padding=(60, 25), alignment=CENTER),
+            children=[
+                self.fuel_slider_title,
+                self.create_button_box(),
+                self.fuel_label_weight,
+                self.fuel_slider,
+                self.fuel_label_volume,
+                self.delta_title,
+                self.delta_volume_label
+            ]
+        )
+
+    def create_button_box(self):
+        fuel_presets = [10000, 15000, 20000, 30000, 41500]
+        buttons = [
+            toga.Button(
+                "Max" if pounds == 41500 else f"{pounds // 1000}K",
+                on_press=partial(self.set_pounds, pounds),
+                style=Pack(padding=(5, 15))
+            )
+            for pounds in fuel_presets
+        ]
+        return toga.Box(style=Pack(direction=ROW, padding=(0, 15)), children=buttons)
+
+    def create_switch_box(self):
         self.box_is_liters_switch = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
         self.box_is_liters_switch.add(self.is_liters)
         self.box_is_liters_switch.add(self.is_liters_alt_label)
 
-        self.flex_box = toga.Box(style=Pack(flex=1))
-
-        self.fuel_slider_title = self.create_label("Fuel Conversion")
-        self.fuel_slider = self.create_slider(5000, 41500, on_change=self.on_fuel_slider_change)
-        self.fuel_label_volume = self.create_label(
-            f"{self.fuel_slider.value / self.CONVERSION_FACTOR:,.0f} {self.fuel_volume_label}", padding=(0, 5))
-        self.fuel_label_weight = self.create_label(f"{self.fuel_slider.value:,.0f} lbs", padding=(0, 5))
-
-        fuel_slider_box = toga.Box(style=Pack(direction=COLUMN, padding=(60, 25), alignment=CENTER))
-
-        button_box = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
-        for pounds in fuel_presets:
-            label = "Max" if pounds == 41500 else f"{pounds // 1000}K"
-            button = toga.Button(label, on_press=partial(self.set_pounds, pounds), style=Pack(padding=(5, 15)))
-            button_box.add(button)
-
-        fuel_slider_box.add(self.fuel_slider_title)
-        fuel_slider_box.add(button_box)
-        fuel_slider_box.add(self.fuel_label_weight)
-        fuel_slider_box.add(self.fuel_slider)
-        fuel_slider_box.add(self.fuel_label_volume)
-
-        self.delta_title = self.create_label("Fuel Uplift", hidden=True, accent=True, padding_top=60)
-        delta_volume = (self.fuel_slider.value - self.starting_volume_lbs) / self.CONVERSION_FACTOR
-        self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True,
-                                                    accent=True, padding=10)
-        fuel_slider_box.add(self.delta_title)
-        fuel_slider_box.add(self.delta_volume_label)
-
-        switch_box = toga.Box(style=Pack(direction=ROW, padding_bottom=20, flex=1))
-        switch_box.add(self.box_start_switch)
-        switch_box.add(self.flex_box)
-        switch_box.add(self.box_is_liters_switch)
-
-        main_box.add(self.starting_box)
-        main_box.add(fuel_slider_box)
-
-        self.flex_box2 = toga.Box(style=Pack(flex=1))
-
-        self.main_window = toga.MainWindow(title=self.formal_name)
-        self.main_window.content = toga.Box(children=[main_box, self.flex_box2, switch_box],
-                                            style=Pack(direction=COLUMN, padding=(40, 0)))
-
-        self.main_window.show()
+        return toga.Box(style=Pack(direction=ROW, padding_bottom=20, flex=1), children=[
+            self.box_start_switch,
+            self.flex_box,
+            self.box_is_liters_switch
+        ])
 
     def toggle_conversion_factor(self, _widget):
-        self.CONVERSION_FACTOR, self.fuel_volume_label = (6.7, "gals") if not self.is_liters.value else (
-                                                          1.54322, "liters")
-        fuel_volume = self.fuel_slider.value / self.CONVERSION_FACTOR
-        delta_lbs = self.fuel_slider.value - self.starting_volume_lbs
-        delta_volume = delta_lbs / self.CONVERSION_FACTOR
-        self.fuel_label_volume.text = f"{fuel_volume:,.0f} {self.fuel_volume_label}"
-        self.delta_volume_label.text = f"{delta_volume:,.0f} {self.fuel_volume_label}"
+        print("Toggling conversion factor")
+        self.CONVERSION_FACTOR, self.fuel_volume_label = (6.7, "gals") if not self.is_liters.value else (1.54322, "liters")
+        self.update_fuel_display()
 
     def toggle_button_visibility(self, _widget):
-        visibility = VISIBLE if self.starting_fuel_switch.value else HIDDEN
-        self.change_visibility(visibility)
+        print("Toggling button visibility")
+        self.change_visibility(VISIBLE if self.starting_fuel_switch.value else HIDDEN)
 
     def change_visibility(self, visibility):
-        self.starting_title.style.visibility = visibility
-        self.starting_slider.style.visibility = visibility
-        self.starting_label_lbs.style.visibility = visibility
-        self.delta_title.style.visibility = visibility
-        self.delta_volume_label.style.visibility = visibility
+        print(f"Changing visibility to: {visibility}")
+        for widget in [self.starting_title, self.starting_slider, self.starting_label_lbs, self.delta_title, self.delta_volume_label]:
+            if widget:
+                widget.style.visibility = visibility
 
     def on_fuel_slider_release(self, _widget):
-        self.fuel_slider.value = round(self.fuel_slider.value / 100) * 100
+        if self.fuel_slider:
+            self.fuel_slider.value = round(self.fuel_slider.value / 100) * 100
 
     def on_starting_slider_change(self, _widget):
-        self.starting_label_lbs.text = f"{self.starting_slider.value:,.0f} lbs"
-        delta_lbs = self.fuel_slider.value - self.starting_slider.value
-        delta_volume = delta_lbs / self.CONVERSION_FACTOR
-        self.delta_volume_label.text = f"{delta_volume:,.0f} {self.fuel_volume_label}"
+        if self.starting_label_lbs:
+            self.starting_label_lbs.text = f"{self.starting_slider.value:,.0f} lbs"
+        self.update_fuel_display()
 
     def on_fuel_slider_change(self, _widget):
         self.fuel_volume_label = "gals" if not self.is_liters.value else "liters"
-        fuel_volume = self.fuel_slider.value / self.CONVERSION_FACTOR
-        delta_lbs = self.fuel_slider.value - self.starting_slider.value
-        delta_volume = delta_lbs / self.CONVERSION_FACTOR
-        self.delta_volume_label.text = f"{delta_volume:,.0f} {self.fuel_volume_label}"
-        self.fuel_label_weight.text = f"{self.fuel_slider.value:,.0f} lbs"
-        self.fuel_label_volume.text = f"{fuel_volume:,.0f} {self.fuel_volume_label}"
+        self.update_fuel_display()
+
+    def update_fuel_display(self):
+        if self.fuel_slider and self.starting_slider:
+            fuel_volume = self.fuel_slider.value / self.CONVERSION_FACTOR
+            delta_lbs = self.fuel_slider.value - self.starting_slider.value
+            delta_volume = delta_lbs / self.CONVERSION_FACTOR
+            if self.delta_volume_label:
+                self.delta_volume_label.text = f"{delta_volume:,.0f} {self.fuel_volume_label}"
+            if self.fuel_label_weight:
+                self.fuel_label_weight.text = f"{self.fuel_slider.value:,.0f} lbs"
+            if self.fuel_label_volume:
+                self.fuel_label_volume.text = f"{fuel_volume:,.0f} {self.fuel_volume_label}"
 
     def set_pounds(self, pounds, *args, **kwargs):
+        print(f"Setting pounds: {pounds}")
         if self.fuel_slider:
             self.fuel_slider.value = pounds
 
