@@ -13,12 +13,12 @@ class HelloWorld(toga.App):
     ALT_LABEL_SIZE = 13
 
     def __init__(self, formal_name, app_id):
-        super().__init__(formal_name, app_id)
         self.accent_color = self.ACCENT_COLOR
         self.fuel_volume_label = self.INITIAL_VOLUME_LABEL
         self.starting_volume_lbs = self.INITIAL_VOLUME_LBS
         self.conversion_factor = self.GALLON_CONVERSION_FACTOR
         self.alt_label_size = self.ALT_LABEL_SIZE
+        super().__init__(formal_name, app_id)
         # self.initialize_ui_elements()
 
     def initialize_ui_elements(self):
