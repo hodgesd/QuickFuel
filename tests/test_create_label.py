@@ -1,5 +1,6 @@
-from helloworld.app import HelloWorld
 from toga.style.pack import HIDDEN, ITALIC
+
+from helloworld.app import HelloWorld
 
 
 def test_create_label_with_defaults():

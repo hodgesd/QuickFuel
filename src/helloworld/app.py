@@ -22,7 +22,10 @@ class HelloWorld(toga.App):
         super().__init__(formal_name, app_id)
         # self.initialize_ui_elements()
 
+    # noinspection PyAttributeOutsideInit
+
     def initialize_ui_elements(self):
+
         self.starting_title = self.create_label("Fuel Gauge", hidden=True, accent=True, padding_top=35)
         self.starting_slider = self.create_slider(4000, 15000, self.on_starting_slider_change, hidden=True)
         self.starting_label_lbs = self.create_label(f"{self.starting_slider.value:,.0f} lbs", hidden=True, accent=True,
@@ -47,11 +50,13 @@ class HelloWorld(toga.App):
         self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True,
                                                     accent=True, padding=10)
 
+        self.box_start_switch = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
+        self.box_is_liters_switch = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
+
         self.flex_box2 = toga.Box(style=Pack(flex=1))
 
     def create_label(self, text, hidden=False, accent=False, size=24, weight=BOLD, **style_kwargs):
         visibility = HIDDEN if hidden else VISIBLE
-        # color = self.accent_color if accent else "#000000"
         style = Pack(text_align=CENTER, font_family=MONOSPACE, font_size=size, font_weight=weight,
                      visibility=visibility, **style_kwargs)
         label = toga.Label(text, style=style)
@@ -77,7 +82,10 @@ class HelloWorld(toga.App):
                                             style=Pack(direction=COLUMN, padding=(40, 0)))
         self.main_window.show()
 
-    def create_main_box(self):
+    def create_main_box(self) -> toga.Box:
+        """
+        Creates the main box containing all the widgets.
+        """
         return toga.Box(
             style=Pack(direction=COLUMN, alignment=CENTER, padding=20),
             children=[
@@ -86,8 +94,7 @@ class HelloWorld(toga.App):
             ]
         )
 
-    def create_starting_box(self):
-        self.box_start_switch = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
+    def create_starting_box(self) -> toga.Box:
         self.box_start_switch.add(self.starting_fuel_switch)
         self.box_start_switch.add(self.starting_alt_label)
 
@@ -98,7 +105,10 @@ class HelloWorld(toga.App):
         ])
         return self.starting_box
 
-    def create_fuel_slider_box(self):
+    def create_fuel_slider_box(self) -> toga.Box:
+        """
+        C
+        """
         return toga.Box(
             style=Pack(direction=COLUMN, padding=(60, 25), alignment=CENTER),
             children=[
@@ -112,7 +122,7 @@ class HelloWorld(toga.App):
             ]
         )
 
-    def create_button_box(self):
+    def create_button_box(self) -> toga.Box:
         fuel_presets = [10000, 15000, 20000, 30000, 41500]
         buttons = [
             toga.Button(
@@ -124,8 +134,7 @@ class HelloWorld(toga.App):
         ]
         return toga.Box(style=Pack(direction=ROW, padding=(0, 15)), children=buttons)
 
-    def create_switch_box(self):
-        self.box_is_liters_switch = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
+    def create_switch_box(self) -> toga.Box:
         self.box_is_liters_switch.add(self.is_liters)
         self.box_is_liters_switch.add(self.is_liters_alt_label)
 
@@ -155,11 +164,17 @@ class HelloWorld(toga.App):
         self.starting_label_lbs.text = f"{self.starting_slider.value:,.0f} lbs"
         self.update_fuel_display()
 
-    def on_fuel_slider_change(self, _widget):
+    def on_fuel_slider_change(self, _widget) -> None:
+        """
+        Method to handle the change event of the fuel slider.
+        """
         self.fuel_volume_label = "gals" if not self.is_liters.value else "liters"
         self.update_fuel_display()
 
     def update_fuel_display(self):
+        """
+        Updates the fuel display with the current values.
+        """
         fuel_volume = self.fuel_slider.value / self.conversion_factor
         delta_lbs = self.fuel_slider.value - self.starting_slider.value
         delta_volume = delta_lbs / self.conversion_factor
@@ -171,14 +186,11 @@ class HelloWorld(toga.App):
     def set_pounds(self, pounds, *args, **kwargs):
         self.fuel_slider.value = pounds
 
-    def get_fuel_unit(self):
-        return "gals" if not self.is_liters.value else "liters"
-
 
 def main():
-    return HelloWorld("G-VII Fuel Calculator", "org.example.helloworld")
+    return HelloWorld("G-VII Fuel Calculator", "org.hdgs.helloworld")
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     app = main()
     app.main_loop()
