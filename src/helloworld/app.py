@@ -47,9 +47,12 @@ class HelloWorld(toga.App):
 
     def create_label(self, text, hidden=False, accent=False, size=24, weight=BOLD, **style_kwargs):
         visibility = HIDDEN if hidden else VISIBLE
-        color = self.accent_color if accent else "#000000"
-        style = Pack(text_align=CENTER, color=color, font_family=MONOSPACE, font_size=size, font_weight=weight, visibility=visibility, **style_kwargs)
-        return toga.Label(text, style=style)
+        # color = self.accent_color if accent else "#000000"
+        style = Pack(text_align=CENTER, font_family=MONOSPACE, font_size=size, font_weight=weight, visibility=visibility, **style_kwargs)
+        label = toga.Label(text, style=style)
+        if accent:
+            label.style.color = self.accent_color
+        return label
 
     def create_slider(self, min_value, max_value, on_change, hidden=False):
         visibility = HIDDEN if hidden else VISIBLE
