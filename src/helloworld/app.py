@@ -1,4 +1,5 @@
 from functools import partial
+
 import toga
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW, CENTER, MONOSPACE, BOLD, HIDDEN, VISIBLE
@@ -24,7 +25,8 @@ class HelloWorld(toga.App):
     def initialize_ui_elements(self):
         self.starting_title = self.create_label("Fuel Gauge", hidden=True, accent=True, padding_top=35)
         self.starting_slider = self.create_slider(4000, 15000, self.on_starting_slider_change, hidden=True)
-        self.starting_label_lbs = self.create_label(f"{self.starting_slider.value:,.0f} lbs", hidden=True, accent=True, padding=(0, 5))
+        self.starting_label_lbs = self.create_label(f"{self.starting_slider.value:,.0f} lbs", hidden=True, accent=True,
+                                                    padding=(0, 5))
 
         self.starting_fuel_switch = self.create_switch("Convert", self.toggle_button_visibility)
         self.starting_alt_label = self.create_label("Uplift", size=self.alt_label_size, padding=10)
@@ -36,19 +38,22 @@ class HelloWorld(toga.App):
 
         self.fuel_slider_title = self.create_label("Fuel Conversion")
         self.fuel_slider = self.create_slider(5000, 41500, self.on_fuel_slider_change)
-        self.fuel_label_volume = self.create_label(f"{self.fuel_slider.value / self.conversion_factor:,.0f} {self.fuel_volume_label}", padding=(0, 5))
+        self.fuel_label_volume = self.create_label(
+            f"{self.fuel_slider.value / self.conversion_factor:,.0f} {self.fuel_volume_label}", padding=(0, 5))
         self.fuel_label_weight = self.create_label(f"{self.fuel_slider.value:,.0f} lbs", padding=(0, 5))
 
         self.delta_title = self.create_label("Fuel Uplift", hidden=True, accent=True, padding_top=60)
         delta_volume = (self.fuel_slider.value - self.starting_volume_lbs) / self.conversion_factor
-        self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True, accent=True, padding=10)
+        self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True,
+                                                    accent=True, padding=10)
 
         self.flex_box2 = toga.Box(style=Pack(flex=1))
 
     def create_label(self, text, hidden=False, accent=False, size=24, weight=BOLD, **style_kwargs):
         visibility = HIDDEN if hidden else VISIBLE
         # color = self.accent_color if accent else "#000000"
-        style = Pack(text_align=CENTER, font_family=MONOSPACE, font_size=size, font_weight=weight, visibility=visibility, **style_kwargs)
+        style = Pack(text_align=CENTER, font_family=MONOSPACE, font_size=size, font_weight=weight,
+                     visibility=visibility, **style_kwargs)
         label = toga.Label(text, style=style)
         if accent:
             label.style.color = self.accent_color
@@ -61,13 +66,15 @@ class HelloWorld(toga.App):
         return toga.Slider(min=min_value, max=max_value, tick_count=tick_count, on_change=on_change, style=style)
 
     def create_switch(self, label, on_change):
-        return toga.Switch(label, on_change=on_change, style=Pack(font_weight=BOLD, font_family=MONOSPACE, padding=(4, 0)))
+        return toga.Switch(label, on_change=on_change,
+                           style=Pack(font_weight=BOLD, font_family=MONOSPACE, padding=(4, 0)))
 
     def startup(self):
         self.initialize_ui_elements()
         main_box = self.create_main_box()
         self.main_window = toga.MainWindow(title=self.formal_name)
-        self.main_window.content = toga.Box(children=[main_box, self.flex_box2, self.create_switch_box()], style=Pack(direction=COLUMN, padding=(40, 0)))
+        self.main_window.content = toga.Box(children=[main_box, self.flex_box2, self.create_switch_box()],
+                                            style=Pack(direction=COLUMN, padding=(40, 0)))
         self.main_window.show()
 
     def create_main_box(self):
@@ -140,7 +147,8 @@ class HelloWorld(toga.App):
         self.change_visibility(VISIBLE if self.starting_fuel_switch.value else HIDDEN)
 
     def change_visibility(self, visibility):
-        for widget in [self.starting_title, self.starting_slider, self.starting_label_lbs, self.delta_title, self.delta_volume_label]:
+        for widget in [self.starting_title, self.starting_slider, self.starting_label_lbs, self.delta_title,
+                       self.delta_volume_label]:
             widget.style.visibility = visibility
 
     def on_starting_slider_change(self, _widget):
