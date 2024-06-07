@@ -70,7 +70,8 @@ class HelloWorld(toga.App):
         style = Pack(color=self.accent_color, flex=1, visibility=visibility)
         return toga.Slider(min=min_value, max=max_value, tick_count=tick_count, on_change=on_change, style=style)
 
-    def create_switch(self, label, on_change):
+    @staticmethod
+    def create_switch(label, on_change):
         return toga.Switch(label, on_change=on_change,
                            style=Pack(font_weight=BOLD, font_family=MONOSPACE, padding=(4, 0)))
 
@@ -188,7 +189,7 @@ class HelloWorld(toga.App):
 
 
 def main():
-    return HelloWorld("G-VII Fuel Calculator", "org.hdgs.helloworld")
+    return HelloWorld("AeroFuel", "org.hdgs.helloworld")
 
 
 if __name__ == '__main__':  # pragma: no cover
