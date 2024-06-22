@@ -48,10 +48,10 @@ class HelloWorld(toga.App):
         self.delta_title = self.create_label("Fuel Uplift", hidden=True, accent=True, padding_top=60)
         delta_volume = (self.fuel_slider.value - self.starting_volume_lbs) / self.conversion_factor
         self.delta_volume_label = self.create_label(f"{delta_volume:,.0f} {self.fuel_volume_label}", hidden=True,
-                                                    accent=True, padding=10)
+                                                    accent=True, padding_top=10)
 
-        self.box_start_switch = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
-        self.box_is_liters_switch = toga.Box(style=Pack(direction=ROW, padding=(0, 15)))
+        self.box_start_switch = toga.Box(style=Pack(direction=ROW, padding=(0,2)))
+        self.box_is_liters_switch = toga.Box(style=Pack(direction=ROW, padding=(0,2)))
 
         self.flex_box2 = toga.Box(style=Pack(flex=1))
 
@@ -80,7 +80,7 @@ class HelloWorld(toga.App):
         main_box = self.create_main_box()
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = toga.Box(children=[main_box, self.flex_box2, self.create_switch_box()],
-                                            style=Pack(direction=COLUMN, padding=(40, 0)))
+                                            style=Pack(direction=COLUMN, padding=(10, 0)))
         self.main_window.show()
 
     def create_main_box(self) -> toga.Box:
@@ -88,7 +88,7 @@ class HelloWorld(toga.App):
         Creates the main box containing all the widgets.
         """
         return toga.Box(
-            style=Pack(direction=COLUMN, alignment=CENTER, padding=20),
+            style=Pack(direction=COLUMN, alignment=CENTER),
             children=[
                 self.create_starting_box(),
                 self.create_fuel_slider_box()
@@ -111,7 +111,7 @@ class HelloWorld(toga.App):
         C
         """
         return toga.Box(
-            style=Pack(direction=COLUMN, padding=(60, 25), alignment=CENTER),
+            style=Pack(direction=COLUMN, padding=(20, 10), alignment=CENTER),
             children=[
                 self.fuel_slider_title,
                 self.create_button_box(),
